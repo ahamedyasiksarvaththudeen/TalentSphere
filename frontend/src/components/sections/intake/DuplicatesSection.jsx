@@ -8,6 +8,7 @@ export default function DuplicatesSection({ v }) {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '10.5px', letterSpacing: '.12em', fontWeight: '700', color: '#5B5575', textTransform: 'uppercase', background: '#fff', border: '1px solid var(--line)', padding: '4px 12px', borderRadius: '999px' }}>Intake · 06</div>
           <div style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-.02em', marginTop: '7px' }}>Duplicate candidate detection</div>
+          <div style={{ fontSize: '12.5px', color: 'var(--sub)', marginTop: '5px', maxWidth: '560px', lineHeight: '1.5' }}>Detect duplicate email, phone number, same resume upload, similar profiles, merge duplicate records, and show duplicate warnings to HR.</div>
         </div>
         <div style={{ fontSize: '12px', color: 'var(--sub)' }}>Nightly scan · similarity ≥ 70% surfaced for review</div>
       </div>
@@ -47,6 +48,21 @@ export default function DuplicatesSection({ v }) {
                 <span style={{ position: 'absolute', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800' }}>{v.dupSim}%</span>
               </span>
             </span>
+          </div>
+          {v.dupWarnShow && (
+<React.Fragment>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: v.dupWarnBg, color: v.dupWarnFg, borderRadius: '12px', padding: '11px 16px', marginTop: '16px', fontSize: '12.5px', fontWeight: '600' }}>
+            <span style={{ fontSize: '15px' }}>⚠</span>
+            <span>{v.dupWarnText}</span>
+          </div>
+          </React.Fragment>
+)}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginTop: '12px' }}>
+            {(v.dupSignals || []).map((sg, $index) => (
+<React.Fragment key={$index}>
+              <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '999px', background: '#F1EBFE', color: 'var(--vio)' }}>{sg.s}</span>
+            </React.Fragment>
+))}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: '12px', marginTop: '18px' }}>
             <span></span>

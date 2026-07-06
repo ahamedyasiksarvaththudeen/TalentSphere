@@ -1,0 +1,26 @@
+# Web framework
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# ORM + validation
+sqlalchemy>=2.0
+pydantic>=2.6
+pydantic-settings>=2.2
+email-validator>=2.1
+
+# Auth
+python-jose[cryptography]>=3.3
+passlib[bcrypt]>=1.7
+bcrypt==3.2.0
+
+# File uploads (resumes, job description documents)
+python-multipart>=0.0.9
+
+# Config
+python-dotenv>=1.0
+
+# Optional — enables real semantic "similar profile" matching in the
+# Duplicate Candidate Detection module (app/utils/similarity.py).
+# The API falls back to a lightweight text-similarity algorithm
+# automatically if this isn't installed, so it's safe to leave commented out.
+# sentence-transformers>=3.0
