@@ -387,18 +387,21 @@ export default class App extends React.Component {
     const D=this.D;
     // 01 admin
     if(S.nav==='admin'){
-      const showU=S.adminTab==='users';
-      Object.assign(out,{
-        adTabUsers:()=>this.setState({adminTab:'users'}),adTabMatrix:()=>this.setState({adminTab:'matrix'}),
-        adShowUsers:showU,adShowMatrix:!showU,
-        adTabUBg:showU?'var(--grad)':'transparent',adTabUFg:showU?'#fff':'#4B4763',adTabUSh:showU?'0 4px 12px rgba(124,58,237,.3)':'none',
-        adTabMBg:!showU?'var(--grad)':'transparent',adTabMFg:!showU?'#fff':'#4B4763',adTabMSh:!showU?'0 4px 12px rgba(124,58,237,.3)':'none'});
+      const tabDefs=[['users','Users · '+D.users.length],['matrix','Role matrix'],['depts','Departments'],['cats','Job categories'],['logins','Login activity'],['org','Org settings']];
+      out.adTabs=tabDefs.map(([key,label])=>{const on=S.adminTab===key;
+        return{label,click:()=>this.setState({adminTab:key}),
+          bg:on?'var(--grad)':'transparent',fg:on?'#fff':'#4B4763',sh:on?'0 4px 12px rgba(124,58,237,.3)':'none'};});
+      Object.assign(out,{adShowUsers:S.adminTab==='users',adShowMatrix:S.adminTab==='matrix',adShowDepts:S.adminTab==='depts',adShowCats:S.adminTab==='cats',adShowLogins:S.adminTab==='logins',adShowOrg:S.adminTab==='org'});
       const roleOv=S.roleOv||{};
+      const statusOv=S.userStatusOv||{};
       out.adUsers=D.users.map((u,i)=>{
         const key='role_'+i;const open=S.dd===key;const role=roleOv[u.email]||u.role;
-        return{name:u.name,email:u.email,title:u.title,role,last:u.last,
+        const status=statusOv[u.email]||u.status||'Active';
+        return{name:u.name,email:u.email,title:u.title,role,last:u.last,dept:u.dept,
           ini:this.ini(u.name),av:this.avGrad(u.name),dl:(i*0.05)+'s',
           tfa:u.tfa?'On':'Off',tfaBg:u.tfa?'#D1FAE5':'#FEE2E2',tfaFg:u.tfa?'#047857':'#B91C1C',
+          status,statusBg:status==='Active'?'#D1FAE5':'#FEE2E2',statusFg:status==='Active'?'#047857':'#B91C1C',
+          statusClick:()=>this.setState({userStatusOv:Object.assign({},statusOv,{[u.email]:status==='Active'?'Suspended':'Active'})}),
           roleClick:(e)=>this.dd(key,e),ddOpen:open,rot:open?'rotate(180deg)':'rotate(0deg)',
           roleOpts:D.roles.map(ro=>({label:ro,fw:ro===role?700:500,color:'#231F35',check:ro===role?'✓':'',
             click:(e)=>{e.stopPropagation();this.setState({roleOv:Object.assign({},roleOv,{[u.email]:ro}),dd:null});}}))};});
@@ -409,6 +412,16 @@ export default class App extends React.Component {
           cells:D.roles.map((_,j)=>{const k=i+'_'+j;const on=!!S.perm[k];
             return{bg:on?'var(--grad)':'#E4E0F0',knob:on?'17.5px':'2.5px',
               click:()=>this.setState({perm:Object.assign({},this.state.perm,{[k]:!on})})};})};});
+      out.adDepts=D.departments.map((d,i)=>({name:d.name,head:d.head,count:d.count,openReqs:d.openReqs,dl:(i*0.05)+'s'}));
+      out.adCats=D.jobCategories.map((c,i)=>({name:c.name,count:c.count,dl:(i*0.05)+'s'}));
+      out.adLogins=D.loginActivity.map((l,i)=>({who:l.who,email:l.email,day:l.day,t:l.t,status:l.status,
+        statusBg:l.status==='Success'?'#D1FAE5':'#FEE2E2',statusFg:l.status==='Success'?'#047857':'#B91C1C',
+        ip:l.ip,device:l.device,dl:(i*0.05)+'s'}));
+      const orgOv=S.orgOv||{};
+      const org=Object.assign({},D.orgSettings,orgOv);
+      out.orgFields=[['name','Organization name'],['domain','Domain'],['timezone','Timezone'],['workWeek','Work week'],['currency','Default currency'],['requisitionApproval','Requisition approval chain']].map(([k,label])=>({
+        label,value:org[k],
+        set:e=>this.setState({orgOv:Object.assign({},orgOv,{[k]:e.target.value})})}));
     }
     // 02 audit
     if(S.nav==='audit'){
@@ -436,13 +449,19 @@ export default class App extends React.Component {
           click:()=>this.setState({jobSel:j.id})};});
       const j=D.jobs.find(x=>x.id===S.jobSel)||D.jobs[0];
       const st=stOv[j.id]||j.status;const open=S.dd==='jbst';
+      const prC={High:['#FEE2E2','#B91C1C'],Medium:['#FEF3C7','#B45309'],Low:['#EEF2FF','#4F46E5']};
+      const pr=j.priority||'Medium';
       Object.assign(out,{jbTitle:j.title,jbMeta:j.team+' · '+j.level+' · '+j.loc+' · hiring manager '+j.hm,jbRubric:j.rubric,
         jbStatus:st,jbStBg:stC[st][0],jbStFg:stC[st][1],jbStDd:(e)=>this.dd('jbst',e),jbStOpen:open,jbStRot:open?'rotate(180deg)':'rotate(0deg)',
         jbStOpts:['Active','On hold','Closed'].map(o=>({label:o,fw:o===st?700:500,check:o===st?'✓':'',
           click:(e)=>{e.stopPropagation();this.setState({jobStOv:Object.assign({},stOv,{[j.id]:o}),dd:null});}})),
-        jbFacts:[{k:'Compensation',v:j.comp},{k:'Applicants',v:String(j.n)},{k:'Days open',v:j.open},{k:'Level',v:j.level}],
+        jbPriority:pr,jbPrBg:(prC[pr]||prC.Medium)[0],jbPrFg:(prC[pr]||prC.Medium)[1],
+        jbFacts:[{k:'Department',v:j.team},{k:'Category',v:j.category||'—'},{k:'Location',v:j.loc},{k:'Experience',v:j.experience||'—'},{k:'Compensation',v:j.comp},{k:'Applicants',v:String(j.n)},{k:'Vacancies',v:String(j.vacancy||1)},{k:'Priority',v:pr},{k:'Days open',v:j.open},{k:'Level',v:j.level}],
         jbCrit:D.crit.map((name,i)=>({name,w:D.critW[i]*2.8+'%',wl:D.critW[i]+'%',dl:(i*0.05)+'s'})),
-        jbSkills:D.gapSkills.map(([name,lv],i)=>({name,lv,bg:i<6?'#F1EBFE':'var(--soft)',fg:i<6?'var(--vio)':'#4B4763',br:i<6?'#E4D9FA':'var(--line)'})),
+        jbSkills:D.gapSkills.map(([name,lv],i)=>({name,lv,req:i<6?'Required':'Optional',bg:i<6?'#F1EBFE':'var(--soft)',fg:i<6?'var(--vio)':'#4B4763',br:i<6?'#E4D9FA':'var(--line)'})),
+        jbJdFile:j.jd?j.jd.file:'—',jbJdUploaded:j.jd?('uploaded '+j.jd.uploaded):'',jbJdShow:!!j.jd,
+        jbResp:(j.responsibilities||[]).map((s,i)=>({s,dl:(i*0.04)+'s'})),
+        jbQual:(j.qualification||[]).map((s,i)=>({s,dl:(i*0.04)+'s'})),
         goScreening:()=>this.go('screening')});
     }
     // 04 candidates
@@ -468,10 +487,31 @@ export default class App extends React.Component {
             {label:'Archive candidate',color:'#DC2626',click:(e)=>{e.stopPropagation();this.setState({dd:null});}}]};});
       const c=D.cands.find(x=>x.id===S.cpSel)||D.cands[0];
       const stage=this.stageOf(c);const ch=this.stageChip(stage);const sc=this.scScore(c.id);
+      const extra=D.candExtra&&D.candExtra[c.id];
+      const finalOv=S.finalStatusOv||{};
+      const finalStatus=finalOv[c.id]||(extra&&extra.finalStatus)||'Pending';
+      const fsC={'Selected':['#D1FAE5','#047857'],'Not selected':['#FEE2E2','#B91C1C'],'Pending':['#FEF3C7','#B45309']};
+      const fsOpen=S.dd==='cpfs';
+      const screeningStatus=sc!=null?'Screened':'Not screened';
+      const intMap={Applied:'Not scheduled',Screened:'Not scheduled',Interview:'In progress',Offer:'Completed',Hired:'Completed',Rejected:'Completed'};
+      const interviewStatus=intMap[stage]||'Not scheduled';
       Object.assign(out,{cpName:c.name,cpTitle:c.title+' at '+c.company,cpIni:this.ini(c.name),cpAv:this.avGrad(c.name),
         cpStage:stage,cpStBg:ch.bg,cpStFg:ch.fg,cpSrc:c.src.split(' — ')[0],
         cpScore:sc!=null?String(sc):'—',cpMatch:c.match!=null?c.match+'%':'—',
-        cpFacts:[{k:'Email',v:c.email},{k:'Phone',v:c.phone},{k:'Location',v:c.loc},{k:'Experience',v:c.yrs+' years'},{k:'Applied',v:c.applied+' · '+jobOf(c).title}],
+        cpFacts:[{k:'Email',v:c.email},{k:'Phone',v:c.phone},{k:'Location',v:c.loc},{k:'Experience',v:c.yrs+' years'},{k:'Applied',v:c.applied+' · '+jobOf(c).title},{k:'Screening status',v:screeningStatus},{k:'Interview status',v:interviewStatus}],
+        cpResumeShow:!!(extra&&extra.resume),
+        cpResumeFile:extra&&extra.resume?extra.resume.file:'—',
+        cpResumeMeta:extra&&extra.resume?('uploaded '+extra.resume.uploaded+' · '+extra.resume.size):'',
+        cpParsedShow:!!(extra&&extra.parsed),
+        cpParsed:extra&&extra.parsed?[{k:'Parsed skills',v:extra.parsed.skills},{k:'Education',v:extra.parsed.education},{k:'Last role',v:extra.parsed.lastRole}]:[],
+        cpNotesShow:!!(extra&&extra.notes&&extra.notes.length),
+        cpNotes:((extra&&extra.notes)||[]).map((n,i)=>({who:n.who,t:n.t,n:n.n,dl:(i*0.04)+'s'})),
+        cpFeedbackShow:!!(extra&&extra.feedback),
+        cpFeedback:extra&&extra.feedback||null,
+        cpFinalStatus:finalStatus,cpFsBg:fsC[finalStatus][0],cpFsFg:fsC[finalStatus][1],
+        cpFsDd:(e)=>this.dd('cpfs',e),cpFsOpen:fsOpen,cpFsRot:fsOpen?'rotate(180deg)':'rotate(0deg)',
+        cpFsOpts:['Selected','Not selected','Pending'].map(o=>({label:o,fw:o===finalStatus?700:500,check:o===finalStatus?'✓':'',
+          click:(e)=>{e.stopPropagation();this.setState({finalStatusOv:Object.assign({},finalOv,{[c.id]:o}),dd:null});}})),
         goScreening:()=>{this.setState({selCand:c.id});this.go('screening');},
         goMatching:()=>{if(D.mt[c.id])this.setState({mtCand:c.id});this.go('matching');}});
     }
@@ -512,6 +552,10 @@ export default class App extends React.Component {
           resolved:!!isMerged,resolvedLabel:isMerged==='merged'?'Merged ✓':'Kept separate ✓'};});
       const d=D.dups.find(x=>x.id===S.dupSel)||D.dups[0];
       out.dupA=d.a;out.dupB=d.b;out.dupSim=d.sim;out.dupRing=138.2*(1-d.sim/100);out.dupWhy=d.why.join(', ');
+      out.dupSignals=(d.signals||[]).map(s=>({s}));
+      out.dupWarnShow=d.sim>=70;
+      out.dupWarnBg=d.sim>=90?'#FEE2E2':'#FEF3C7';out.dupWarnFg=d.sim>=90?'#B91C1C':'#B45309';
+      out.dupWarnText=d.sim>=90?'High-confidence duplicate — verify before creating a new candidate record.':'Possible duplicate — review the matching fields below before proceeding.';
       out.dupRows=d.rows.map(([k,a,b,match],i)=>({k,a,b,matchBg:match?'#F1EBFE':'var(--soft)',dl:(i*0.035)+'s'}));
       out.dupMerge=()=>this.setState({merged:Object.assign({},merged,{[d.id]:'merged'})});
       out.dupKeep=()=>this.setState({merged:Object.assign({},merged,{[d.id]:'kept'})});

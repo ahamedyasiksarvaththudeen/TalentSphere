@@ -8,6 +8,7 @@ export default function JobsSection({ v }) {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '10.5px', letterSpacing: '.12em', fontWeight: '700', color: '#5B5575', textTransform: 'uppercase', background: '#fff', border: '1px solid var(--line)', padding: '4px 12px', borderRadius: '999px' }}>Foundation · 03</div>
           <div style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-.02em', marginTop: '7px' }}>Job requirement management</div>
+          <div style={{ fontSize: '12.5px', color: 'var(--sub)', marginTop: '5px', maxWidth: '560px', lineHeight: '1.5' }}>Create and manage job title, department, location, experience, salary, required/optional skills, responsibilities, qualification, vacancy count, priority, JD document, and job status.</div>
         </div>
         <button style={{ background: 'var(--grad)', color: '#fff', border: 'none', borderRadius: '999px', padding: '9px 18px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 6px 16px rgba(124,58,237,.35)', transition: 'all .25s' }} className="hov61">New requisition</button>
       </div>
@@ -37,6 +38,8 @@ export default function JobsSection({ v }) {
                 <div style={{ fontSize: '19px', fontWeight: '700', letterSpacing: '-.015em' }}>{v.jbTitle}</div>
                 <div style={{ fontSize: '12.5px', color: 'var(--sub)', marginTop: '3px' }}>{v.jbMeta}</div>
               </div>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '10.5px', fontWeight: '700', padding: '5px 11px', borderRadius: '999px', background: v.jbPrBg, color: v.jbPrFg }}>{v.jbPriority} priority</span>
               <span style={{ position: 'relative' }}>
                 <span onClick={v.jbStDd} style={{ display: 'inline-flex', alignItems: 'center', gap: '9px', fontSize: '12.5px', fontWeight: '700', borderRadius: '999px', padding: '7px 12px 7px 16px', cursor: 'pointer', background: v.jbStBg, color: v.jbStFg, transition: 'all .2s' }}>
                   {v.jbStatus}
@@ -53,6 +56,7 @@ export default function JobsSection({ v }) {
                   </span>
                 </React.Fragment>
 )}
+              </span>
               </span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginTop: '16px' }}>
@@ -86,10 +90,40 @@ export default function JobsSection({ v }) {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
               {(v.jbSkills || []).map((s, $index) => (
 <React.Fragment key={$index}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '12px', fontWeight: '600', padding: '6px 13px', background: s.bg, color: s.fg, borderRadius: '999px', border: `1px solid ${s.br}` }}>{s.name}<span style={{ fontFamily: '\'JetBrains Mono\',monospace', fontSize: '10px', opacity: '.75' }}>L{s.lv}</span></span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '12px', fontWeight: '600', padding: '6px 13px', background: s.bg, color: s.fg, borderRadius: '999px', border: `1px solid ${s.br}` }}>{s.name}<span style={{ fontFamily: '\'JetBrains Mono\',monospace', fontSize: '10px', opacity: '.75' }}>L{s.lv} · {s.req}</span></span>
               </React.Fragment>
 ))}
             </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', padding: '18px 24px 4px' }}>
+            <div>
+              <div style={{ fontSize: '10px', letterSpacing: '.12em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', marginBottom: '8px' }}>Responsibilities</div>
+              {(v.jbResp || []).map((r, $index) => (
+<React.Fragment key={$index}>
+                <div style={{ fontSize: '12.5px', color: '#4B4763', padding: '5px 0', animation: 'rowIn .4s both', animationDelay: r.dl }}>• {r.s}</div>
+              </React.Fragment>
+))}
+            </div>
+            <div>
+              <div style={{ fontSize: '10px', letterSpacing: '.12em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', marginBottom: '8px' }}>Qualification</div>
+              {(v.jbQual || []).map((q, $index) => (
+<React.Fragment key={$index}>
+                <div style={{ fontSize: '12.5px', color: '#4B4763', padding: '5px 0', animation: 'rowIn .4s both', animationDelay: q.dl }}>• {q.s}</div>
+              </React.Fragment>
+))}
+            </div>
+          </div>
+          <div style={{ padding: '16px 24px 4px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '.12em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', marginBottom: '8px' }}>Job description document</div>
+            {v.jbJdShow && (
+<React.Fragment>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--soft)', borderRadius: '12px', padding: '10px 14px' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: '600' }}>{v.jbJdFile}</span>
+                <span style={{ fontSize: '11.5px', color: 'var(--sub)' }}>{v.jbJdUploaded}</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: '700', color: 'var(--vio)', cursor: 'pointer' }}>View</span>
+              </div>
+            </React.Fragment>
+)}
           </div>
           <div style={{ display: 'flex', gap: '10px', padding: '18px 24px 22px' }}>
             <button onClick={v.goScreening} style={{ background: 'var(--grad)', color: '#fff', border: 'none', borderRadius: '999px', padding: '9px 18px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 6px 16px rgba(124,58,237,.35)', transition: 'all .25s' }} className="hov64">Open screening queue</button>

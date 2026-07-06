@@ -14,12 +14,88 @@ export function buildMockData() {
       {id:'c10',name:'Lucas Fournier',job:'j5',stage:'Screened',score:76,match:78,yrs:5,loc:'Remote — US',src:'LinkedIn',applied:'Jun 20',company:'Brightlane',title:'Frontend Engineer',email:'l.fournier@bmail.fr',phone:'+1 (415) 555-0173'},
       {id:'c11',name:'Hana Yoshida',job:'j3',stage:'Interview',score:88,match:90,yrs:7,loc:'Remote — US',src:'Referral',applied:'Jun 8',company:'Tessellate',title:'ML Engineer',email:'hana.yoshida@tmail.jp',phone:'+1 (628) 555-0182'},
       {id:'c12',name:'Alex Bergström',job:'j3',stage:'Applied',score:null,match:null,yrs:6,loc:'Remote — US',src:'Job board',applied:'Jul 1',company:'Kanso',title:'Data Scientist',email:'alex.bergstrom@kmail.se',phone:'+1 (971) 555-0148'}];
+    const candExtra={
+      c1:{resume:{file:'p_raghavan_resume.pdf',uploaded:'Jun 24',size:'214 KB'},
+        parsed:{skills:'Go, PostgreSQL, Kubernetes, gRPC, API design +4',education:'M.S. Computer Science — degree level retained',lastRole:'Staff Software Engineer · Helix Systems · 4 yrs'},
+        notes:[{who:'A. Osei',t:'Jun 25','n':'Strong systems depth, referral from a trusted source. Fast-track to panel.'},{who:'R. Kim',t:'Jun 26','n':'Comp expectation ($210k) sits inside band — no flag.'}],
+        feedback:{rec:'Strong hire',by:'A. Osei',t:'Jul 1',note:'System-design panel confirmed the resume evidence — clear promote signal.'},
+        finalStatus:'Pending'},
+      c2:{resume:{file:'d_okafor_resume.pdf',uploaded:'Jun 26',size:'188 KB'},
+        parsed:{skills:'Go, Kafka, PostgreSQL, DynamoDB, gRPC',education:'B.S. Computer Science',lastRole:'Senior Software Engineer · Cloudbase · 3 yrs'},
+        notes:[{who:'R. Kim',t:'Jun 27','n':'Verified open-source pgx contributions — direct and dated.'}],
+        feedback:{rec:'Hire',by:'J. Park',t:'Jul 1',note:'Technical screen confirmed depth; scorecard submitted.'},
+        finalStatus:'Pending'},
+      c8:{resume:{file:'g_nakamura_resume.pdf',uploaded:'Jun 2',size:'240 KB'},
+        parsed:{skills:'Design systems, Figma, Research ops, Prototyping',education:'B.F.A. Design',lastRole:'Principal Product Designer · Fielder · 5 yrs'},
+        notes:[{who:'T. Walsh',t:'Jun 15','n':'Portfolio is the strongest in the pool — design-system leadership is exactly what we need.'}],
+        feedback:{rec:'Strong hire',by:'T. Walsh',t:'Jun 20',note:'Panel unanimous — offer approved.'},
+        finalStatus:'Selected'},
+      c6:{resume:{file:'j_ellis_resume.pdf',uploaded:'Jun 28',size:'96 KB'},
+        parsed:{skills:'Go, PostgreSQL',education:'B.A. — degree level retained',lastRole:'Backend Engineer · Feldspar · 2 yrs'},
+        notes:[{who:'R. Kim',t:'Jun 29','n':'Below seniority bar for this req — flagged for recruiter review rather than auto-reject.'}],
+        feedback:null,
+        finalStatus:'Not selected'},
+      c3:{resume:{file:'m_lindqvist_resume.pdf',uploaded:'Jun 22',size:'201 KB'},
+        parsed:{skills:'Distributed systems, PostgreSQL, Kubernetes, Go (partial)',education:'M.S. Computer Science',lastRole:'Principal Engineer · Nortia · 6 yrs'},
+        notes:[{who:'A. Osei',t:'Jun 23','n':'Deepest systems and leadership evidence in the pool — Go depth is the open question.'}],
+        feedback:null,
+        finalStatus:'Pending'},
+      c4:{resume:{file:'t_herrera_resume.pdf',uploaded:'Jun 27',size:'142 KB'},
+        parsed:{skills:'Go, PostgreSQL, Kubernetes',education:'B.S. Computer Science',lastRole:'Software Engineer II · Datawheel · 2 yrs'},
+        notes:[{who:'R. Kim',t:'Jun 28','n':'Solid mid-level evidence; nothing exceeding the L5 bar yet.'}],
+        feedback:null,
+        finalStatus:'Not selected'},
+      c5:{resume:{file:'w_chen_resume.pdf',uploaded:'Jun 25',size:'118 KB'},
+        parsed:{skills:'Go, PostgreSQL, ClickHouse',education:'B.S. Computer Science',lastRole:'Senior Engineer · Arclight · 3 yrs'},
+        notes:[{who:'D. Sharma',t:'Jun 26','n':'Language-depth claim conflicts with recent Python-heavy work — probe in screen.'}],
+        feedback:null,
+        finalStatus:'Pending'},
+      c7:{resume:{file:'a_diallo_resume.pdf',uploaded:'Jul 2',size:'176 KB'},
+        parsed:{skills:'Distributed systems, TimescaleDB, PostgreSQL, Rust',education:'M.S. Computer Science — degree level retained',lastRole:'Senior Software Engineer · Quanta Grid · 4 yrs'},
+        notes:[{who:'R. Kim',t:'Jul 2','n':'Strong reliability evidence — Go depth is the open question, side projects only.'}],
+        feedback:null,
+        finalStatus:'Pending'},
+      c9:{resume:{file:'s_marino_resume.pdf',uploaded:'Jun 10',size:'164 KB'},
+        parsed:{skills:'Growth experimentation, SQL, Roadmapping',education:'B.A. Economics',lastRole:'Senior PM, Growth · Loopwell · 3 yrs'},
+        notes:[{who:'S. Whitmore',t:'Jun 12','n':'Strong experimentation track record — exec round scheduled.'}],
+        feedback:{rec:'Hire',by:'S. Whitmore',t:'Jul 3',note:'Exec round confirmed strategic thinking and stakeholder management.'},
+        finalStatus:'Pending'},
+      c10:{resume:{file:'l_fournier_resume.pdf',uploaded:'Jun 20',size:'129 KB'},
+        parsed:{skills:'React, TypeScript, GraphQL, Accessibility',education:'B.S. Computer Science',lastRole:'Frontend Engineer · Brightlane · 2 yrs'},
+        notes:[{who:'J. Park',t:'Jun 21','n':'Clean component work in portfolio — good fit for the activation surface.'}],
+        feedback:null,
+        finalStatus:'Pending'},
+      c11:{resume:{file:'h_yoshida_resume.pdf',uploaded:'Jun 8',size:'188 KB'},
+        parsed:{skills:'Python, PyTorch, MLOps, Kafka',education:'M.S. Machine Learning',lastRole:'ML Engineer · Tessellate · 3 yrs'},
+        notes:[{who:'D. Sharma',t:'Jun 9','n':'Strong production ML background — advancing to ML depth interview.'}],
+        feedback:null,
+        finalStatus:'Pending'},
+      c12:{resume:{file:'a_bergstrom_resume.pdf',uploaded:'Jul 1',size:'109 KB'},
+        parsed:{skills:'Python, SQL, Statistics',education:'M.S. Data Science',lastRole:'Data Scientist · Kanso · 2 yrs'},
+        notes:[],
+        feedback:null,
+        finalStatus:'Pending'}};
     const jobs=[
-      {id:'j1',title:'Senior Backend Engineer',team:'Platform',level:'L5',loc:'Remote — US',comp:'$185–225k',hm:'A. Osei',open:'34d',n:128,status:'Active',rubric:'j1-r3'},
-      {id:'j2',title:'Staff Product Designer',team:'Design',level:'L6',loc:'New York',comp:'$195–240k',hm:'T. Walsh',open:'52d',n:86,status:'Active',rubric:'j2-r1'},
-      {id:'j3',title:'ML Engineer',team:'Intelligence',level:'L5',loc:'Remote — US',comp:'$200–250k',hm:'D. Sharma',open:'41d',n:74,status:'Active',rubric:'j3-r2'},
-      {id:'j4',title:'Product Manager, Growth',team:'Growth',level:'L5',loc:'Austin',comp:'$170–205k',hm:'S. Whitmore',open:'19d',n:143,status:'On hold',rubric:'j4-r1'},
-      {id:'j5',title:'Frontend Engineer',team:'Activation',level:'L4',loc:'Remote — US',comp:'$150–185k',hm:'J. Park',open:'27d',n:97,status:'Active',rubric:'j5-r2'}];
+      {id:'j1',title:'Senior Backend Engineer',team:'Platform',category:'Engineering',level:'L5',loc:'Remote — US',comp:'$185–225k',hm:'A. Osei',open:'34d',n:128,status:'Active',rubric:'j1-r3',priority:'High',vacancy:2,experience:'7+ years',
+        jd:{file:'senior-backend-engineer-jd.pdf',uploaded:'Jun 1'},
+        responsibilities:['Own distributed-systems design for the core billing platform','Set technical direction across 3 regions of infrastructure','Mentor senior engineers and run the architecture guild'],
+        qualification:['B.S. in Computer Science or equivalent experience','7+ years building backend systems at scale','Direct experience owning production Go services']},
+      {id:'j2',title:'Staff Product Designer',team:'Design',category:'Design',level:'L6',loc:'New York',comp:'$195–240k',hm:'T. Walsh',open:'52d',n:86,status:'Active',rubric:'j2-r1',priority:'Medium',vacancy:1,experience:'10+ years',
+        jd:{file:'staff-product-designer-jd.pdf',uploaded:'May 18'},
+        responsibilities:['Lead design systems strategy across the Design org','Partner with PM and Eng leadership on product bets','Review and raise the bar on craft for the design team'],
+        qualification:['10+ years product design experience','Portfolio demonstrating 0→1 and scaled-system design','Experience leading design reviews at the staff level']},
+      {id:'j3',title:'ML Engineer',team:'Intelligence',category:'Data & ML',level:'L5',loc:'Remote — US',comp:'$200–250k',hm:'D. Sharma',open:'41d',n:74,status:'Active',rubric:'j3-r2',priority:'High',vacancy:2,experience:'5+ years',
+        jd:{file:'ml-engineer-jd.pdf',uploaded:'Jun 9'},
+        responsibilities:['Build and maintain the screening & matching model pipeline','Own model evaluation, drift monitoring and bias audits','Collaborate with recruiters to translate rubric changes into model updates'],
+        qualification:['5+ years applied ML / NLP experience','Experience shipping production ML systems','Familiarity with fairness and bias evaluation methods']},
+      {id:'j4',title:'Product Manager, Growth',team:'Growth',category:'Product',level:'L5',loc:'Austin',comp:'$170–205k',hm:'S. Whitmore',open:'19d',n:143,status:'On hold',rubric:'j4-r1',priority:'Low',vacancy:1,experience:'5+ years',
+        jd:{file:'pm-growth-jd.pdf',uploaded:'Apr 22'},
+        responsibilities:['Define and drive the growth roadmap','Run experimentation across acquisition and activation funnels','Partner with design and engineering on rapid iteration'],
+        qualification:['5+ years product management experience','Track record of shipping growth experiments','Strong analytical and SQL skills']},
+      {id:'j5',title:'Frontend Engineer',team:'Activation',category:'Engineering',level:'L4',loc:'Remote — US',comp:'$150–185k',hm:'J. Park',open:'27d',n:97,status:'Active',rubric:'j5-r2',priority:'Medium',vacancy:3,experience:'3+ years',
+        jd:{file:'frontend-engineer-jd.pdf',uploaded:'Jun 3'},
+        responsibilities:['Build activation-surface UI used by every candidate','Improve performance and accessibility across the app','Partner with design on the component library'],
+        qualification:['3+ years frontend engineering experience','Strong React fundamentals','Eye for detail on accessibility and performance']}];
     const crit=['Distributed systems','Language depth (Go)','Data stores','API design','Scale & reliability','Mentoring','Communication'];
     const critW=[25,15,12,12,14,10,12];
     const scr={
@@ -98,14 +174,34 @@ export function buildMockData() {
       {day:'Jul 1',t:'09:12:57',who:'SCREEN v4.2',sys:true,what:'Batch screening: 22 candidates on Frontend Engineer',meta:'19 scored · 3 low-confidence flags',tag:'AI'},
       {day:'Jul 1',t:'08:30:40',who:'I. Whitfield',what:'Enabled masking: employment gaps under 6 months',meta:'applies to all future runs',tag:'Admin'}];
     const users=[
-      {name:'Rachel Kim',email:'rachel.kim@meridianlabs.com',role:'Admin',title:'Lead Recruiter',last:'Active now',tfa:true},
-      {name:'Dev Sharma',email:'dev.sharma@meridianlabs.com',role:'Recruiter',title:'Technical Recruiter',last:'2h ago',tfa:true},
-      {name:'Lena Beaumont',email:'lena.beaumont@meridianlabs.com',role:'Recruiter',title:'Recruiter',last:'1d ago',tfa:true},
-      {name:'Amos Osei',email:'amos.osei@meridianlabs.com',role:'Hiring manager',title:'Eng Director, Platform',last:'3h ago',tfa:true},
-      {name:'June Park',email:'june.park@meridianlabs.com',role:'Interviewer',title:'Staff Engineer',last:'5d ago',tfa:false},
-      {name:'Maya Iyer',email:'maya.iyer@meridianlabs.com',role:'Coordinator',title:'Recruiting Coordinator',last:'30m ago',tfa:true},
-      {name:'Iris Whitfield',email:'iris.whitfield@meridianlabs.com',role:'Compliance',title:'People Compliance Lead',last:'Yesterday',tfa:true}];
+      {name:'Rachel Kim',email:'rachel.kim@meridianlabs.com',role:'Admin',title:'Lead Recruiter',last:'Active now',tfa:true,status:'Active',dept:'Platform'},
+      {name:'Dev Sharma',email:'dev.sharma@meridianlabs.com',role:'Recruiter',title:'Technical Recruiter',last:'2h ago',tfa:true,status:'Active',dept:'Intelligence'},
+      {name:'Lena Beaumont',email:'lena.beaumont@meridianlabs.com',role:'Recruiter',title:'Recruiter',last:'1d ago',tfa:true,status:'Active',dept:'Design'},
+      {name:'Amos Osei',email:'amos.osei@meridianlabs.com',role:'Hiring manager',title:'Eng Director, Platform',last:'3h ago',tfa:true,status:'Active',dept:'Platform'},
+      {name:'June Park',email:'june.park@meridianlabs.com',role:'Interviewer',title:'Staff Engineer',last:'5d ago',tfa:false,status:'Active',dept:'Activation'},
+      {name:'Maya Iyer',email:'maya.iyer@meridianlabs.com',role:'Coordinator',title:'Recruiting Coordinator',last:'30m ago',tfa:true,status:'Active',dept:'Growth'},
+      {name:'Iris Whitfield',email:'iris.whitfield@meridianlabs.com',role:'Compliance',title:'People Compliance Lead',last:'Yesterday',tfa:true,status:'Suspended',dept:'People & Compliance'}];
     const roles=['Admin','Recruiter','Hiring manager','Interviewer','Coordinator','Compliance'];
+    const departments=[
+      {name:'Platform',head:'A. Osei',count:14,openReqs:1},
+      {name:'Design',head:'T. Walsh',count:8,openReqs:1},
+      {name:'Intelligence',head:'D. Sharma',count:11,openReqs:1},
+      {name:'Growth',head:'S. Whitmore',count:9,openReqs:1},
+      {name:'Activation',head:'J. Park',count:6,openReqs:1},
+      {name:'People & Compliance',head:'I. Whitfield',count:4,openReqs:0}];
+    const jobCategories=[
+      {name:'Engineering',count:2},
+      {name:'Design',count:1},
+      {name:'Data & ML',count:1},
+      {name:'Product',count:1}];
+    const loginActivity=[
+      {who:'Rachel Kim',email:'rachel.kim@meridianlabs.com',day:'Today',t:'09:40',status:'Success',ip:'104.28.4.11',device:'Chrome · macOS'},
+      {who:'Dev Sharma',email:'dev.sharma@meridianlabs.com',day:'Today',t:'07:55',status:'Success',ip:'71.202.9.44',device:'Chrome · Windows'},
+      {who:'Unknown',email:'iris.whitfield@meridianlabs.com',day:'Today',t:'02:14',status:'Failed',ip:'185.220.101.7',device:'Firefox · Linux'},
+      {who:'Lena Beaumont',email:'lena.beaumont@meridianlabs.com',day:'Yesterday',t:'18:22',status:'Success',ip:'98.14.2.201',device:'Safari · macOS'},
+      {who:'Amos Osei',email:'amos.osei@meridianlabs.com',day:'Yesterday',t:'14:05',status:'Success',ip:'24.11.88.3',device:'Chrome · macOS'},
+      {who:'June Park',email:'june.park@meridianlabs.com',day:'Jul 1',t:'11:30',status:'Success',ip:'70.55.19.62',device:'Edge · Windows'}];
+    const orgSettings={name:'Meridian Labs',domain:'meridianlabs.com',timezone:'America/Chicago (CST)',workWeek:'Mon–Fri',currency:'USD ($)',requisitionApproval:'Two-step (Hiring manager → Finance)'};
     const perms=[['View candidates',[1,1,1,1,1,1]],['Edit candidates',[1,1,0,0,1,0]],['Run AI screening',[1,1,1,0,0,0]],['Adjust ranking weights',[1,1,1,0,0,0]],['Edit rubrics',[1,0,1,0,0,0]],['Approve rubric changes',[1,0,0,0,0,1]],['View bias audits',[1,0,0,0,0,1]],['Generate offers',[1,1,0,0,0,0]],['Approve offers',[1,0,1,0,0,0]],['Export data & PII',[1,0,0,0,0,1]],['Manage users',[1,0,0,0,0,0]],['View audit log',[1,0,0,0,0,1]]];
     const days={c7:1,c12:0,c2:4,c3:8,c4:3,c10:5,c1:6,c9:2,c11:3,c8:2};
     const upFields={
@@ -114,11 +210,14 @@ export function buildMockData() {
       f3:{cand:'Unresolved',rows:[['Full name','K. Ramirez (low contrast scan)',74],['Email','— not found',0],['Phone','+1 (305) 555-01__',41],['Current title','Engineering Manager (?)',68],['Company','Southfield or Southfields',63],['Experience','dates ambiguous — overlapping ranges',52],['Skills','Java, Spring, AWS',81],['Education','M.S. — degree level retained',77],['Location','Miami, FL',88]],note:'Scan quality below threshold. 4 fields need manual confirmation before a record is created.',dup:'Cannot check duplicates until email or phone is confirmed.'},
       f4:{cand:'Mariana Santos',rows:[['Full name','Mariana Santos',98],['Email','m.santos@vmail.br',99],['Phone','+1 (617) 555-0192',95],['Current title','Senior Data Engineer',94],['Company','Verawave',96],['Experience','7 years · 3 roles',92],['Skills','Python, Spark, Airflow, dbt +5',90],['Education','M.S. — degree level retained',94],['Location','Boston, MA',97]],note:'',dup:'No existing record matched — nearest 44%.'}};
     const dups=[
-      {id:'d1',a:'Thomas Nguyen',b:'Tom Nguyen',sim:97,why:['Same email','Same phone','Resume text 91% overlap'],rows:[
+      {id:'d1',a:'Thomas Nguyen',b:'Tom Nguyen',sim:97,why:['Same email','Same phone','Resume text 91% overlap'],
+        signals:['Email','Phone','Resume upload'],rows:[
         ['Name','Thomas Nguyen','Tom Nguyen',false],['Email','t.nguyen@vmail.com','t.nguyen@vmail.com',true],['Phone','+1 (503) 555-0147','+1 (503) 555-0147',true],['Location','Portland, OR','Portland, OR',true],['Current role','Senior Backend Engineer — Vantiv Labs','Senior Backend Engineer — Vantiv Labs',true],['Applied to','Senior Backend Engineer','Senior Backend Engineer + ML Engineer',false],['Resume','v1 · uploaded Mar 14','v2 · uploaded Jun 18',false],['Source','LinkedIn','Direct',false],['Notes','2 recruiter notes','—',false]]},
-      {id:'d2',a:'Katherine Doyle',b:'Kate Doyle-Ramos',sim:89,why:['Same phone','Employer + title match'],rows:[
+      {id:'d2',a:'Katherine Doyle',b:'Kate Doyle-Ramos',sim:89,why:['Same phone','Employer + title match'],
+        signals:['Phone','Similar profile'],rows:[
         ['Name','Katherine Doyle','Kate Doyle-Ramos',false],['Email','kdoyle@wmail.com','kate.dr@pmail.io',false],['Phone','+1 (312) 555-0186','+1 (312) 555-0186',true],['Location','Chicago, IL','Chicago, IL',true],['Current role','Product Designer — Marrow','Product Designer — Marrow',true],['Applied to','Staff Product Designer','Staff Product Designer',true],['Resume','v1 · uploaded May 2','v1 · uploaded Jun 29',false],['Source','Agency — TalentBridge','Direct',false],['Notes','—','1 note',false]]},
-      {id:'d3',a:'R. Iyer',b:'Rohan Iyer',sim:76,why:['Name similarity','Same metro'],rows:[
+      {id:'d3',a:'R. Iyer',b:'Rohan Iyer',sim:76,why:['Name similarity','Same metro'],
+        signals:['Similar profile'],rows:[
         ['Name','R. Iyer','Rohan Iyer',false],['Email','r.iyer88@pmail.com','rohan@iyer.dev',false],['Phone','+1 (650) 555-0171','+1 (650) 555-0134',false],['Location','San Mateo, CA','Palo Alto, CA',false],['Current role','Data Engineer — Cardinal','ML Engineer — Softline',false],['Applied to','ML Engineer','ML Engineer',true],['Resume','v1 · uploaded Jun 11','v1 · uploaded Jun 30',false],['Source','Job board','Referral',false],['Notes','—','—',true]]}];
     const offers=[
       {id:'o1',cand:'Grace Nakamura',job:'Staff Product Designer',code:'OF-2231',status:'Sent',statusK:'sent',base:'$228,000',equity:'0.18%',bonus:'$20,000 sign-on',sent:'Jul 1',expires:'Jul 8 · 5 days',prob:'0.84',
@@ -138,5 +237,5 @@ export function buildMockData() {
       {dow:'Tue',dom:'7',t:'14:00',cand:'Hana Yoshida',type:'ML depth interview',who:'D. Sharma'},
       {dow:'Wed',dom:'8',t:'11:00',cand:'Sofia Marino',type:'Exec round',who:'S. Whitmore'},
       {dow:'Thu',dom:'9',t:'09:30',cand:'Daniel Okafor',type:'Hiring manager screen',who:'A. Osei'}];
-  return {cands,jobs,crit,critW,scr,mtF,mt,rk,gapSkills,gapLv,gapNotes,notifs,audit,users,roles,perms,days,upFields,dups,offers,sched};
+  return {cands,candExtra,jobs,crit,critW,scr,mtF,mt,rk,gapSkills,gapLv,gapNotes,notifs,audit,users,roles,perms,departments,jobCategories,loginActivity,orgSettings,days,upFields,dups,offers,sched};
 }

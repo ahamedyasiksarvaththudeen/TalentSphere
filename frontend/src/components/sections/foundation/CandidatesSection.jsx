@@ -8,6 +8,7 @@ export default function CandidatesSection({ v }) {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '10.5px', letterSpacing: '.12em', fontWeight: '700', color: '#5B5575', textTransform: 'uppercase', background: '#fff', border: '1px solid var(--line)', padding: '4px 12px', borderRadius: '999px' }}>Foundation · 04</div>
           <div style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-.02em', marginTop: '7px' }}>Candidates</div>
+          <div style={{ fontSize: '12.5px', color: 'var(--sub)', marginTop: '5px', maxWidth: '560px', lineHeight: '1.5' }}>Store personal details, resume file, parsed resume details, applied job role, AI score, matching score, screening status, interview status, recruiter notes, feedback, and final selection status.</div>
         </div>
         <span style={{ position: 'relative' }}>
           <span onClick={v.cdDd} style={{ display: 'inline-flex', alignItems: 'center', gap: '9px', fontSize: '12.5px', fontWeight: '600', background: '#fff', border: '1px solid var(--line)', borderRadius: '999px', padding: '8px 12px 8px 16px', cursor: 'pointer', transition: 'all .2s' }} className="hov67">
@@ -69,9 +70,26 @@ export default function CandidatesSection({ v }) {
           <div style={{ padding: '34px 22px 12px' }}>
             <div style={{ fontSize: '17px', fontWeight: '700' }}>{v.cpName}</div>
             <div style={{ fontSize: '12.5px', color: 'var(--sub)', marginTop: '2px' }}>{v.cpTitle}</div>
-            <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{ fontSize: '11px', fontWeight: '700', padding: '3px 11px', borderRadius: '999px', background: v.cpStBg, color: v.cpStFg }}>{v.cpStage}</span>
               <span style={{ fontSize: '11px', fontWeight: '600', padding: '3px 11px', borderRadius: '999px', background: 'var(--soft)', color: '#4B4763' }}>{v.cpSrc}</span>
+              <span style={{ position: 'relative' }}>
+                <span onClick={v.cpFsDd} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '700', padding: '3px 10px 3px 11px', borderRadius: '999px', background: v.cpFsBg, color: v.cpFsFg, cursor: 'pointer' }}>
+                  {v.cpFinalStatus}
+                  <svg width="8" height="8" viewBox="0 0 10 10" style={{ transition: 'transform .25s', transform: v.cpFsRot }}><path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                </span>
+                {v.cpFsOpen && (
+<React.Fragment>
+                  <span style={{ position: 'absolute', top: 'calc(100% + 6px)', left: '0', background: '#fff', borderRadius: '14px', boxShadow: '0 16px 44px rgba(45,20,90,.18)', border: '1px solid var(--line)', padding: '6px', minWidth: '150px', zIndex: '50', animation: 'ddIn .18s ease', display: 'block' }}>
+                    {(v.cpFsOpts || []).map((o, $index) => (
+<React.Fragment key={$index}>
+                      <span onClick={o.click} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '9px', cursor: 'pointer', fontSize: '12.5px', fontWeight: o.fw, transition: 'background .15s' }} className="hov74">{o.label}<span style={{ color: 'var(--vio)', fontWeight: '700' }}>{o.check}</span></span>
+                    </React.Fragment>
+))}
+                  </span>
+                </React.Fragment>
+)}
+              </span>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', padding: '6px 22px 4px' }}>
@@ -94,6 +112,60 @@ export default function CandidatesSection({ v }) {
             </React.Fragment>
 ))}
           </div>
+          {v.cpResumeShow && (
+<React.Fragment>
+          <div style={{ padding: '4px 22px 4px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '.1em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', margin: '10px 0 6px' }}>Resume file</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--soft)', borderRadius: '12px', padding: '9px 12px' }}>
+              <span style={{ fontSize: '12.5px', fontWeight: '600' }}>{v.cpResumeFile}</span>
+              <span style={{ fontSize: '11px', color: 'var(--sub)' }}>{v.cpResumeMeta}</span>
+              <span style={{ marginLeft: 'auto', fontSize: '11.5px', fontWeight: '700', color: 'var(--vio)', cursor: 'pointer' }}>View</span>
+            </div>
+          </div>
+          </React.Fragment>
+)}
+          {v.cpParsedShow && (
+<React.Fragment>
+          <div style={{ padding: '4px 22px 4px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '.1em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', margin: '10px 0 6px' }}>Parsed resume details</div>
+            {(v.cpParsed || []).map((p, $index) => (
+<React.Fragment key={$index}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', padding: '6px 0', borderBottom: '1px solid var(--soft)', fontSize: '12px' }}>
+                <span style={{ color: 'var(--sub)', flex: 'none' }}>{p.k}</span>
+                <span style={{ fontWeight: '600', textAlign: 'right' }}>{p.v}</span>
+              </div>
+            </React.Fragment>
+))}
+          </div>
+          </React.Fragment>
+)}
+          {v.cpNotesShow && (
+<React.Fragment>
+          <div style={{ padding: '4px 22px 4px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '.1em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', margin: '10px 0 6px' }}>Recruiter notes</div>
+            {(v.cpNotes || []).map((n, $index) => (
+<React.Fragment key={$index}>
+              <div style={{ background: 'var(--soft)', borderRadius: '12px', padding: '9px 12px', marginBottom: '6px', animation: 'rowIn .4s both', animationDelay: n.dl }}>
+                <div style={{ fontSize: '11px', color: 'var(--sub)', display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: '700' }}>{n.who}</span><span>{n.t}</span></div>
+                <div style={{ fontSize: '12px', color: '#4B4763', marginTop: '3px' }}>{n.n}</div>
+              </div>
+            </React.Fragment>
+))}
+          </div>
+          </React.Fragment>
+)}
+          {v.cpFeedbackShow && (
+<React.Fragment>
+          <div style={{ padding: '4px 22px 4px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '.1em', fontWeight: '700', color: '#9B96B0', textTransform: 'uppercase', margin: '10px 0 6px' }}>Feedback</div>
+            <div style={{ background: 'linear-gradient(135deg,#F8F5FE,#FDF4F9)', border: '1px solid #F0E8FB', borderRadius: '12px', padding: '10px 12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--vio)' }}>{v.cpFeedback && v.cpFeedback.rec}</div>
+              <div style={{ fontSize: '11.5px', color: '#4B4763', marginTop: '3px' }}>{v.cpFeedback && v.cpFeedback.note}</div>
+              <div style={{ fontSize: '11px', color: 'var(--sub)', marginTop: '5px' }}>{v.cpFeedback && v.cpFeedback.by} · {v.cpFeedback && v.cpFeedback.t}</div>
+            </div>
+          </div>
+          </React.Fragment>
+)}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px 22px 22px' }}>
             <button onClick={v.goScreening} style={{ background: 'var(--grad)', color: '#fff', border: 'none', borderRadius: '999px', padding: '9px 0', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 6px 16px rgba(124,58,237,.35)', transition: 'all .25s' }} className="hov72">View AI screening</button>
             <button onClick={v.goMatching} style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '999px', padding: '8px 0', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', transition: 'all .25s' }} className="hov73">Match breakdown</button>
