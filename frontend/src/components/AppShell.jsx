@@ -41,18 +41,18 @@ export default function AppShell({ v, children }) {
         <div style={{ position: 'relative' }}>
           <div onClick={v.ddProfile} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px 6px 5px 12px', borderRadius: '999px', transition: 'all .25s', border: '1px solid transparent' }} className="hov3">
             <div style={{ textAlign: 'right', lineHeight: '1.25' }}>
-              <div style={{ fontSize: '13px', fontWeight: '600' }}>Rachel Kim</div>
-              <div style={{ fontSize: '11px', color: 'var(--sub)' }}>Lead Recruiter</div>
+              <div style={{ fontSize: '13px', fontWeight: '600' }}>{v.currentUserName}</div>
+              <div style={{ fontSize: '11px', color: 'var(--sub)' }}>{v.currentUserRoleLabel}</div>
             </div>
-            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--grad)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '12px', boxShadow: '0 3px 10px rgba(124,58,237,.3)' }}>RK</div>
+            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--grad)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '12px', boxShadow: '0 3px 10px rgba(124,58,237,.3)' }}>{v.currentUserIni}</div>
             <svg width="10" height="10" viewBox="0 0 10 10" style={{ transition: 'transform .25s', transform: v.profRot }}><path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="#6F6B84" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"></path></svg>
           </div>
           {v.ddProfileOpen && (
 <React.Fragment>
             <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: '0', background: '#fff', borderRadius: '16px', boxShadow: '0 16px 44px rgba(45,20,90,.18)', border: '1px solid var(--line)', padding: '8px', minWidth: '210px', zIndex: '60', animation: 'ddIn .18s ease' }}>
               <div style={{ padding: '10px 12px 8px', borderBottom: '1px solid var(--soft)', marginBottom: '6px' }}>
-                <div style={{ fontSize: '13px', fontWeight: '600' }}>Rachel Kim</div>
-                <div style={{ fontSize: '11.5px', color: 'var(--sub)' }}>rachel.kim@meridianlabs.com</div>
+                <div style={{ fontSize: '13px', fontWeight: '600' }}>{v.currentUserName}</div>
+                <div style={{ fontSize: '11.5px', color: 'var(--sub)' }}>{v.currentUserEmail}</div>
               </div>
               {(v.profMenu || []).map((m, $index) => (
 <React.Fragment key={$index}>
@@ -68,10 +68,12 @@ export default function AppShell({ v, children }) {
 
     
     <div style={{ gridRow: '2', background: '#FBFAFD', borderRight: '1px solid rgba(124,58,237,.09)', overflowY: 'auto', padding: '14px 12px 24px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      {v.showHome && (
       <div onClick={v.goHome} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '13px', cursor: 'pointer', background: v.homeBg, color: v.homeColor, boxShadow: v.homeSh, transition: 'all .25s', marginBottom: '8px' }} className="hov5">
         <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2.5 7.5 L8 2.5 L13.5 7.5 L13.5 13.5 L9.8 13.5 L9.8 10 L6.2 10 L6.2 13.5 L2.5 13.5 Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path></svg>
         <span style={{ fontSize: '13.5px', fontWeight: '600' }}>Home</span>
       </div>
+      )}
       {(v.navGroups || []).map((g, $index) => (
 <React.Fragment key={$index}>
         <div style={{ marginBottom: '2px' }}>

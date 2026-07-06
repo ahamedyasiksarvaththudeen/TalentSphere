@@ -28,6 +28,42 @@ import AnalyticsSection from './components/sections/analytics/AnalyticsSection.j
 import ReportsSection from './components/sections/analytics/ReportsSection.jsx';
 // System tab
 import NotificationsSection from './components/sections/system/NotificationsSection.jsx';
+// Auth / access-control
+import LoginPage from './components/auth/LoginPage.jsx';
+import UserManagementSection from './components/auth/UserManagementSection.jsx';
+import InterviewReportsSection from './components/sections/interview-ops/InterviewReportsSection.jsx';
+import { getCurrentUser, logout as authLogout, ROLES, ROLE_LABELS } from './auth/authStore.js';
+
+// Every operational module in the app (everything except the Access group,
+// which is for creating logins and is handled separately per role below).
+const ALL_MODULE_NAV_IDS = [
+  'home', 'admin', 'audit', 'jobs', 'candidates',
+  'upload', 'duplicates',
+  'screening', 'matching', 'ranking', 'skillgap', 'bias', 'questions', 'recommend',
+  'pipeline', 'scheduling', 'feedback', 'offers',
+  'analytics', 'reports',
+  'notifications',
+];
+
+// Which nav ids each role is allowed to visit. `null` = full access (no filtering).
+const NAV_ACCESS = {
+  // Monitors overall activity; can create Admin + Executive HR logins.
+  [ROLES.SUPER_ADMIN]: new Set(['home', 'audit', 'analytics', 'reports', 'notifications', 'usermgmt']),
+  // Monitors Executive HR activity only - view-only, cannot create logins.
+  [ROLES.ADMIN]: new Set(['home', 'audit', 'analytics', 'reports', 'notifications']),
+  // Full access to every module, plus creating HR logins and managing reports.
+  [ROLES.EXECUTIVE_HR]: null,
+  // HR conducts interviews, so every module is visible for context - only
+  // the Access (login-creation) group stays hidden.
+  [ROLES.HR]: new Set(ALL_MODULE_NAV_IDS),
+};
+
+const DEFAULT_NAV_BY_ROLE = {
+  [ROLES.SUPER_ADMIN]: 'audit',
+  [ROLES.ADMIN]: 'audit',
+  [ROLES.EXECUTIVE_HR]: 'home',
+  [ROLES.HR]: 'scheduling',
+};
 
 export default class App extends React.Component {
   static defaultProps = { accentPair: ['#7C3AED', '#EC4899'], bgMotion: true };
@@ -35,12 +71,12 @@ export default class App extends React.Component {
   constructor(props){
     super(props);
     this.timers=[];
-    this.state={nav:'home',dd:null,cnt:1,
+    const currentUser = getCurrentUser();
+    this.state={currentUser,nav:currentUser?(DEFAULT_NAV_BY_ROLE[currentUser.role]||'home'):'home',dd:null,cnt:1,
       navOpen:{found:true,intake:false,ai:true,ops:false,ana:false,sys:false},
       selCand:'c1',screened:{},runPhase:-1,elapsed:0,fb:null,stageOv:{},
       mtCand:'c1',mtOpen:0,
       weights:{sk:35,ex:25,as:20,re:10,rf:10},
-      gapCand:'c3',
       qgPhase:-1,editQ:null,qEdits:{},regen:{},added:{},
       recDone:{},jdFixed:{},
       adminTab:'users',perm:null,
@@ -50,9 +86,6 @@ export default class App extends React.Component {
       upSel:'f1',upSt:'idle',
       dupSel:'d1',dupPick:{},merged:{},
       moved:{},
-      booked:{},
-      fbR:{},fbRec:null,fbSubmitted:false,
-      offerSel:'o1',ob:{eq:true,ac:true,bd:true,wk:false,i9:false},
       rpSecs:{sum:true,funnel:true,src:true,bias:false,comp:false,rec:true},rpPhase:-1,
       ntFilter:'All',ntRead:{}};
     this.state.perm=this.defPerm();
@@ -80,7 +113,22 @@ export default class App extends React.Component {
     const step=t=>{const p=Math.min(1,(t-t0)/950);this.setState({cnt:1-Math.pow(1-p,3)});if(p<1)this._raf=requestAnimationFrame(step);};
     this._raf=requestAnimationFrame(step);
   }
-  go=(nav)=>{this.setState({nav,dd:null});this.animCount();};
+  canAccessNav=(nav)=>{
+    const role=this.state.currentUser&&this.state.currentUser.role;
+    const whitelist=NAV_ACCESS[role];
+    if(whitelist===undefined)return false;
+    if(whitelist===null)return true;
+    return whitelist.has(nav);
+  };
+  go=(nav)=>{if(!this.canAccessNav(nav))return;this.setState({nav,dd:null});this.animCount();};
+  handleLogin=(user)=>{
+    this.setState({currentUser:user,nav:DEFAULT_NAV_BY_ROLE[user.role]||'home',dd:null});
+    this.animCount();
+  };
+  handleLogout=()=>{
+    authLogout();
+    this.setState({currentUser:null,dd:null});
+  };
   dd(key,e){e.stopPropagation();this.setState({dd:this.state.dd===key?null:key});}
   fmt(n){return n.toLocaleString('en-US');}
   cUp(v){return this.fmt(Math.round(v*this.state.cnt));}
@@ -119,7 +167,7 @@ export default class App extends React.Component {
   renderVals(){
     const S=this.state;
     return Object.assign({},
-      this.shellVals(S),this.homeVals(S),this.scrVals(S),this.mtVals(S),this.rkVals(S),this.gapVals(S),
+      this.shellVals(S),this.homeVals(S),this.scrVals(S),this.mtVals(S),this.rkVals(S),
       this.biasVals(S),this.qgVals(S),this.recVals(S),this.foundVals(S),this.intakeVals(S),
       this.opsVals(S),this.insightVals(S));
   }
@@ -127,14 +175,23 @@ export default class App extends React.Component {
   icon(path){return React.createElement('svg',{width:14,height:14,viewBox:'0 0 16 16',key:'i'},React.createElement('path',{d:path,fill:'none',stroke:'currentColor',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'}));}
 
   shellVals(S){
+    const role=S.currentUser&&S.currentUser.role;
+    const accessItems=[];
+    if(role===ROLES.SUPER_ADMIN||role===ROLES.EXECUTIVE_HR)accessItems.push(['usermgmt','21','User management']);
+    if(role===ROLES.EXECUTIVE_HR)accessItems.push(['interviewreports','22','Interview reports']);
     const groups=[
       {key:'found',label:'Foundation',ic:'M2.5 13.5 L13.5 13.5 M4 13.5 L4 6.5 L8 3 L12 6.5 L12 13.5',items:[['admin','01','Admin & roles'],['audit','02','Audit log'],['jobs','03','Job requirements'],['candidates','04','Candidates']]},
       {key:'intake',label:'Intake',ic:'M8 2.5 L8 10 M5 7 L8 10 L11 7 M2.5 12.5 L13.5 12.5',items:[['upload','05','Resume intake'],['duplicates','06','Duplicates']]},
       {key:'ai',label:'AI Intelligence',ai:true,ic:'M8 2 L9.5 6.5 L14 8 L9.5 9.5 L8 14 L6.5 9.5 L2 8 L6.5 6.5 Z',items:[['screening','07','Resume screening'],['matching','08','Matching'],['ranking','09','Ranking'],['skillgap','10','Skill gaps'],['bias','11','Bias-aware screening'],['questions','12','Interview questions'],['recommend','13','Recommendations']]},
       {key:'ops',label:'Interview Ops',ic:'M3 4.5 L13 4.5 L13 13 L3 13 Z M3 7.5 L13 7.5 M6 2.5 L6 5 M10 2.5 L10 5',items:[['pipeline','14','Pipeline board'],['scheduling','15','Scheduling'],['feedback','16','Feedback'],['offers','17','Offers & onboarding']]},
       {key:'ana',label:'Analytics',ic:'M3 13 L3 8 M7 13 L7 4 M11 13 L11 6 M15 13 L1 13',items:[['analytics','18','Dashboard'],['reports','19','Report builder']]},
-      {key:'sys',label:'System',ic:'M8 5.5 A2.5 2.5 0 1 1 8 10.5 A2.5 2.5 0 1 1 8 5.5 M8 1.5 L8 3 M8 13 L8 14.5 M1.5 8 L3 8 M13 8 L14.5 8',items:[['notifications','20','Notifications']]}];
-    const navGroups=groups.map(g=>{
+      {key:'sys',label:'System',ic:'M8 5.5 A2.5 2.5 0 1 1 8 10.5 A2.5 2.5 0 1 1 8 5.5 M8 1.5 L8 3 M8 13 L8 14.5 M1.5 8 L3 8 M13 8 L14.5 8',items:[['notifications','20','Notifications']]},
+      {key:'access',label:'Access',ic:'M8 1.5 A6.5 6.5 0 1 1 7.9 1.5 M8 5 L8 8 L10 9.5',items:accessItems}];
+    const whitelist=NAV_ACCESS[role];
+    const visibleGroups=groups
+      .map(g=>({...g,items:whitelist?g.items.filter(([id])=>whitelist.has(id)):g.items}))
+      .filter(g=>g.items.length>0);
+    const navGroups=visibleGroups.map(g=>{
       const open=!!S.navOpen[g.key];
       const hasActive=g.items.some(([id])=>id===S.nav);
       return{label:g.label,open,rot:open?'rotate(180deg)':'rotate(0deg)',
@@ -148,12 +205,16 @@ export default class App extends React.Component {
             sh:on?'0 6px 16px rgba(124,58,237,.35)':'none'};})};});
     const unread=this.D.notifs.filter(n=>n.unread&&!S.ntRead[n.id]).length;
     const flags={s_home:S.nav==='home'};
-    'admin audit jobs candidates upload duplicates screening matching ranking skillgap bias questions recommend pipeline scheduling feedback offers analytics reports notifications'.split(' ').forEach(k=>{flags['s_'+k]=S.nav===k;});
+    'admin audit jobs candidates upload duplicates screening matching ranking skillgap bias questions recommend pipeline scheduling feedback offers analytics reports notifications usermgmt interviewreports'.split(' ').forEach(k=>{flags['s_'+k]=S.nav===k;});
+    const user=S.currentUser||{name:'Guest',role:null};
+    const roleLabel=ROLE_LABELS[user.role]||'';
     return Object.assign({navGroups,unread,unreadShow:unread>0,
+      showHome:this.canAccessNav('home'),
       goNotif:()=>this.go('notifications'),goHome:()=>this.go('home'),goJobs:()=>this.go('jobs'),goAdmin:()=>this.go('admin'),goAudit:()=>this.go('audit'),goPipeline:()=>this.go('pipeline'),goSched:()=>this.go('scheduling'),goBias:()=>this.go('bias'),
       homeBg:S.nav==='home'?'var(--grad)':'transparent',homeColor:S.nav==='home'?'#fff':'#3A3552',homeSh:S.nav==='home'?'0 6px 16px rgba(124,58,237,.35)':'none',
       ddProfile:(e)=>this.dd('profile',e),ddProfileOpen:S.dd==='profile',profRot:S.dd==='profile'?'rotate(180deg)':'rotate(0deg)',
-      profMenu:[{label:'Profile settings',color:'#231F35',click:()=>this.setState({dd:null})},{label:'Preferences',color:'#231F35',click:()=>this.setState({dd:null})},{label:'Keyboard shortcuts',color:'#231F35',click:()=>this.setState({dd:null})},{label:'Sign out',color:'#DC2626',click:()=>this.setState({dd:null})}]},flags);
+      currentUserName:user.name,currentUserRoleLabel:roleLabel,currentUserEmail:user.email||'',currentUserIni:user.name?this.ini(user.name):'',
+      profMenu:[{label:'Sign out',color:'#DC2626',click:()=>{this.setState({dd:null});this.handleLogout();}}]},flags);
   }
 
   homeVals(S){
@@ -246,27 +307,6 @@ export default class App extends React.Component {
     const factors=defs.map(([k,label,desc])=>({label,desc,w:S.weights[k],set:e=>this.setState({weights:Object.assign({},this.state.weights,{[k]:+e.target.value})})}));
     return{rkRows:rows,rkFactors:factors,rkSum:sum,rkSumWarn:sum!==100,
       rkReset:()=>this.setState({weights:{sk:35,ex:25,as:20,re:10,rf:10}})};
-  }
-  gapVals(S){
-    const D=this.D;const ids=['c1','c2','c3','c4','c7'];
-    const sel=S.gapCand;
-    const cover=id=>{const lv=D.gapLv[id];let got=0,req=0;D.gapSkills.forEach(([,r],i)=>{req+=r;got+=Math.min(lv[i],r);});return Math.round(got/req*100);};
-    const list=ids.map(id=>{const c=D.cands.find(x=>x.id===id);const on=id===sel;
-      return{name:c.name,pct:cover(id)+'%',click:()=>{this.setState({gapCand:id});this.animCount();},bg:on?'#F1EBFE':'transparent',ini:this.ini(c.name),av:this.avGrad(c.name)};});
-    const lv=D.gapLv[sel];const notes=D.gapNotes[sel]||{};
-    const rows=D.gapSkills.map(([skill,req],i)=>{const have=lv[i];const gap=req-have;
-      const boxes=[1,2,3,4,5].map(n=>({bg:n<=have?'var(--grad)':(n<=req?'#fff':'var(--soft)'),br:n<=req?(n<=have?'1px solid transparent':'1.5px dashed #F59E0B'):'1px solid var(--line)'}));
-      return{skill,boxes,gapN:gap>0?'−'+gap:'',note:notes[i]||'',must:i<6?'MUST':'NICE',mustColor:i<6?'#7C3AED':'#9B96B0',mustBg:i<6?'#F1EBFE':'var(--soft)',dl:(i*0.04)+'s'};});
-    const c=D.cands.find(x=>x.id===sel);
-    const cv=cover(sel);
-    const crits=rows.filter((r,i)=>D.gapSkills[i][1]-lv[i]>0&&i<6).map(r=>r.skill);
-    return{gapList:list,gapSelName:c.name,gapSelSub:c.title+' at '+c.company,
-      gapPct:Math.round(cv*S.cnt)+'%',gapRing:163.4*(1-(cv/100)*S.cnt),
-      gapAv:this.avGrad(c.name),gapIni:this.ini(c.name),gapRows:rows,
-      gapCrit:crits.length?crits.join(' · '):'None — all must-haves at or above required level',
-      gapCritColor:crits.length?'#B45309':'#059669',
-      gapSuggestShow:sel==='c3'||sel==='c7',
-      gapSuggest:sel==='c3'?'Adjacent fit: Staff Platform Architect (draft req) — coverage rises to 91% under that rubric, where orchestration is weighted lower.':(sel==='c7'?'Ramp plan: Go depth is the only structural gap. Comparable Rust experience suggests a 4–6 week ramp — flag for the hiring manager.':'')};
   }
   biasVals(S){
     if(S.nav!=='bias')return{};
@@ -494,53 +534,6 @@ export default class App extends React.Component {
             dl:(i*0.05)+'s',showBtn:canAdv,advLabel:'Advance',
             advance:()=>this.setState({stageOv:Object.assign({},this.state.stageOv,{[c.id]:order[order.indexOf(label)+1]})})};})};});
     }
-    if(S.nav==='scheduling'){
-      out.schDays=D.sched.map(s=>({dow:s.dow,dom:s.dom}));
-      out.schHours=['9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM'];
-      const toTop=t=>{const [h,m]=t.split(':').map(Number);return (h-9)*56+(m/60*56);};
-      const evColors=['linear-gradient(135deg,#7C3AED,#A78BFA)','linear-gradient(135deg,#EC4899,#F472B6)','linear-gradient(135deg,#0EA5E9,#38BDF8)','linear-gradient(135deg,#10B981,#34D399)'];
-      const booked=S.booked||{};
-      out.schCols=D.sched.map((s,i)=>({events:[{cand:s.cand,type:s.type,top:toTop(s.t),h:64,bg:evColors[i%4],
-        click:()=>this.setState({schedSel:i})}]}));
-      const idx=S.schedSel??0;const s=D.sched[idx];
-      out.schSelCand=s.cand;out.schSelType=s.type+' · '+s.t;
-      out.schPanel=[{name:s.who.split(' +')[0],status:'Confirmed'},{name:'M. Iyer (coordinator)',status:'Confirmed'},{name:'Panel room B',status:'Booked'}].map(p=>({name:p.name,status:p.status,ini:this.ini(p.name),av:this.avGrad(p.name),stColor:'#059669'}));
-      out.schSlots=['Thu Jul 9 · 10:00 AM','Thu Jul 9 · 2:00 PM','Fri Jul 10 · 11:00 AM'].map((label,i)=>{const key=idx+'_'+i;const bk=!!booked[key];
-        return{label,booked:bk,notBooked:!bk,bg:bk?'#F1EBFE':'#fff',br:bk?'#E4D9FA':'var(--line)',
-          click:()=>this.setState({booked:Object.assign({},booked,{[key]:true})})};});
-    }
-    if(S.nav==='feedback'){
-      const fbR=S.fbR||{};
-      const critDefs=[['System design depth','Decomposition, tradeoffs, and scale reasoning'],['Coding fluency','Correctness and clarity under time pressure'],['Communication','Clarity explaining decisions to the panel'],['Collaboration signal','How they responded to pushback and hints']];
-      const opts=['Strong no','Lean no','Lean yes','Strong yes'];
-      out.fbCriteria=critDefs.map(([label,desc],i)=>({label,desc,opts:opts.map((o,oi)=>{const on=fbR[i]===oi;
-        return{label:o,click:()=>this.setState({fbR:Object.assign({},fbR,{[i]:oi})}),
-          br:on?'#7C3AED':'var(--line)',bg:on?(oi<2?'#FEE2E2':'#D1FAE5'):'#fff',fg:on?(oi<2?'#B91C1C':'#047857'):'#4B4763'};})}));
-      out.fbQ=['Your resume mentions mentoring 4 engineers — walk me through one you grew, start to finish.','Pick the design doc you\u2019re proudest of. What was the strongest pushback, and what did the final version concede?'];
-      const recOpts=['Strong no hire','No hire','Hire','Strong hire'];
-      out.fbRecOpts=recOpts.map((o,i)=>{const on=S.fbRec===i;
-        return{label:o,click:()=>this.setState({fbRec:i}),
-          br:on?'#7C3AED':'var(--line)',bg:on?'var(--grad)':'#fff',fg:on?'#fff':'#4B4763'};});
-      out.fbSubmit=()=>this.setState({fbSubmitted:true});
-      out.fbSubmitLabel=S.fbSubmitted?'Submitted ✓':'Submit scorecard';
-      out.fbSubmitted=S.fbSubmitted;
-    }
-    if(S.nav==='offers'){
-      const stC={Sent:['#EEF2FF','#4F46E5'],Accepted:['#D1FAE5','#047857'],Negotiating:['#FEF3C7','#B45309'],Declined:['#FEE2E2','#B91C1C']};
-      out.ofList=D.offers.map((o,i)=>{const on=S.offerSel===o.id;
-        return{cand:o.cand,job:o.job,code:o.code,status:o.status,stBg:stC[o.status][0],stFg:stC[o.status][1],
-          click:()=>this.setState({offerSel:o.id}),border:on?'1.5px solid #C9BDEB':'1px solid var(--line)',sh:on?'var(--shHov)':'var(--sh)'};});
-      const o=D.offers.find(x=>x.id===S.offerSel)||D.offers[0];
-      Object.assign(out,{ofCand:o.cand,ofJob:o.job,ofCode:o.code,ofStatus:o.status,ofStBg:stC[o.status][0],ofStFg:stC[o.status][1],
-        ofBase:o.base,ofEquity:o.equity,ofBonus:o.bonus,
-        ofProbShow:o.prob!=='—',ofProb:o.prob,ofProbW:o.prob!=='—'?Math.round(parseFloat(o.prob)*100):0,
-        ofChain:o.chain.map(([label,date,st])=>({label,date,dotBg:st==='done'?'#059669':(st==='warn'?'#B45309':(st==='fail'?'#DC2626':'#D9D4E8')),showCheck:st==='done'})),
-        ofEvents:o.events.map(([t,what])=>({t,what}))});
-      const ob=S.ob;
-      const obDefs=[['eq','Equipment shipped'],['ac','Accounts provisioned'],['bd','Buddy assigned'],['wk','Welcome kit sent'],['i9','I-9 / compliance docs signed']];
-      out.ofOb=obDefs.map(([k,label])=>({label,checked:ob[k],bg:ob[k]?'var(--grad)':'#fff',br:ob[k]?'transparent':'var(--line)',fg:ob[k]?'#231F35':'#9B96B0',
-        click:()=>this.setState({ob:Object.assign({},ob,{[k]:!ob[k]})})}));
-    }
     return out;
   }
   insightVals(S){
@@ -601,14 +594,19 @@ export default class App extends React.Component {
   }
 
   render(){
+    if(!this.state.currentUser){
+      return <LoginPage onLogin={this.handleLogin} />;
+    }
     const v = this.renderVals();
     return (
       <AppShell v={v}>
       {v.s_home && <HomeSection v={v} />}
+      {v.s_usermgmt && <UserManagementSection currentUser={this.state.currentUser} />}
+      {v.s_interviewreports && <InterviewReportsSection />}
       {v.s_screening && <ScreeningSection v={v} />}
       {v.s_matching && <MatchingSection v={v} />}
       {v.s_ranking && <RankingSection v={v} />}
-      {v.s_skillgap && <SkillGapSection v={v} />}
+      {v.s_skillgap && <SkillGapSection />}
       {v.s_bias && <BiasSection v={v} />}
       {v.s_questions && <QuestionsSection v={v} />}
       {v.s_recommend && <RecommendSection v={v} />}
@@ -619,9 +617,9 @@ export default class App extends React.Component {
       {v.s_upload && <UploadSection v={v} />}
       {v.s_duplicates && <DuplicatesSection v={v} />}
       {v.s_pipeline && <PipelineSection v={v} />}
-      {v.s_scheduling && <SchedulingSection v={v} />}
-      {v.s_feedback && <FeedbackSection v={v} />}
-      {v.s_offers && <OffersSection v={v} />}
+      {v.s_scheduling && <SchedulingSection />}
+      {v.s_feedback && <FeedbackSection />}
+      {v.s_offers && <OffersSection />}
       {v.s_analytics && <AnalyticsSection v={v} />}
       {v.s_reports && <ReportsSection v={v} />}
       {v.s_notifications && <NotificationsSection v={v} />}
