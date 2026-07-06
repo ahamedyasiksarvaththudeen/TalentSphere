@@ -77,7 +77,6 @@ def _seed(db) -> None:
                 timezone="America/Chicago (CST)",
                 work_week="Mon-Fri",
                 currency="USD ($)",
-                requisition_approval="Two-step (Hiring manager -> Finance)",
             )
         )
 
@@ -90,7 +89,6 @@ def _seed(db) -> None:
                 hashed_password=hash_password(DEFAULT_ADMIN_PASSWORD),
                 role=RoleEnum.admin.value,
                 status=AccountStatusEnum.active.value,
-                two_factor_enabled=True,
             )
         )
 

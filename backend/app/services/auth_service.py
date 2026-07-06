@@ -9,13 +9,7 @@ from app.core.security import create_access_token, verify_password
 from app.models.user import AccountStatusEnum, LoginActivity, User
 
 
-def authenticate(
-    db: Session,
-    email: str,
-    password: str,
-    ip_address: str | None,
-    device: str | None,
-) -> str:
+def authenticate(db: Session, email: str, password: str) -> str:
     """Verify credentials, record the attempt in the login-activity log, and
     return a JWT access token on success."""
     user = db.query(User).filter(User.email == email).first()
@@ -26,8 +20,6 @@ def authenticate(
             user_id=user.id if user else None,
             email_attempted=email,
             success=success,
-            ip_address=ip_address,
-            device=device,
         )
     )
 

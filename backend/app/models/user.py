@@ -30,7 +30,6 @@ class Department(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    head: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
     users: Mapped[list["User"]] = relationship(back_populates="department")
 
@@ -52,7 +51,6 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(30), default=RoleEnum.recruiter.value, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default=AccountStatusEnum.active.value, nullable=False)
-    two_factor_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     department_id: Mapped[int | None] = mapped_column(ForeignKey("departments.id"), nullable=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -75,8 +73,6 @@ class LoginActivity(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     email_attempted: Mapped[str] = mapped_column(String(255))
     success: Mapped[bool] = mapped_column(Boolean, default=False)
-    ip_address: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    device: Mapped[str | None] = mapped_column(String(150), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
@@ -121,4 +117,3 @@ class OrgSetting(Base):
     timezone: Mapped[str] = mapped_column(String(100), default="")
     work_week: Mapped[str] = mapped_column(String(50), default="Mon-Fri")
     currency: Mapped[str] = mapped_column(String(50), default="USD ($)")
-    requisition_approval: Mapped[str] = mapped_column(String(255), default="")

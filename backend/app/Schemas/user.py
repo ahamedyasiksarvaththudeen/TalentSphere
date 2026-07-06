@@ -10,7 +10,6 @@ from app.Schemas.common import ORMBase
 
 class DepartmentBase(BaseModel):
     name: str
-    head: str | None = None
 
 
 class DepartmentCreate(DepartmentBase):
@@ -60,7 +59,6 @@ class UserRead(ORMBase):
     title: str | None
     role: str
     status: str
-    two_factor_enabled: bool
     department_id: int | None
     last_login_at: datetime | None
 
@@ -69,8 +67,6 @@ class LoginActivityRead(ORMBase):
     id: int
     email_attempted: str
     success: bool
-    ip_address: str | None
-    device: str | None
     created_at: datetime
 
 
@@ -99,7 +95,6 @@ class OrgSettingRead(ORMBase):
     timezone: str
     work_week: str
     currency: str
-    requisition_approval: str
 
 
 class OrgSettingUpdate(BaseModel):
@@ -108,4 +103,3 @@ class OrgSettingUpdate(BaseModel):
     timezone: str | None = None
     work_week: str | None = None
     currency: str | None = None
-    requisition_approval: str | None = None
